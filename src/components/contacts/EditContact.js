@@ -12,6 +12,18 @@ class AddContact extends Component {
         errors: {}
     }
 
+    async componentDidMount() {
+        const id = this.props.match.params.id;
+
+       const res = await axios.get(`https://jsonplaceholder.typicode.com/users/${id}`);
+
+       this.setState({
+           name: res.data.name,
+           email: res.data.email,
+           phone: res.data.phone
+       });
+    }
+
     onChangeInput = (e) => this.setState({[e.target.name]: e.target.value})
 
     submit = async (dispatch, size, e) => {
@@ -34,17 +46,19 @@ class AddContact extends Component {
             return;
         }
 
-        const newContact = {
+        const upContact = {
             name,
             email,
             phone
         }
 
+        const id = this.props.match.params.id;
+
         try{
-              const res = await axios.post('https://jsonplaceholder.typicode.com/users', newContact)
+              const res = await axios.put(`https://jsonplaceholder.typicode.com/users/${id}`, upContact)
         
             dispatch({
-                type: "ADD_CONTACT",
+                type: "UPDATE_CONTACT",
                 payload: res.data
             })
         }
@@ -77,7 +91,7 @@ class AddContact extends Component {
                       <form onSubmit={this.submit.bind(this, dispatch, value.contacts.length)}>    
                       <div className="card">
                           <div className="card-body">
-                              <h4 className="card-title">Add contact</h4>
+                              <h4 className="card-title">Edit contact</h4>
                               <div className="card-text">
                                   <TextInputGroup 
                                         label="Name" 
@@ -103,7 +117,7 @@ class AddContact extends Component {
                                         onChange={this.onChangeInput}
                                         error={errors.phone}
                                   />
-                                  <button className="btn btn-success btn-block">Add new Contact</button>
+                                  <button className="btn btn-danger btn-block">Update Contact</button>
                               </div>
                           </div>
                       </div>
